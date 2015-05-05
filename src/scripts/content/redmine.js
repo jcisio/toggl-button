@@ -24,6 +24,9 @@ togglbutton.render('body.controller-issues.action-show h2:not(.toggl)', {}, func
   var done = createTag('button', '', 'Done');
   $('h2').appendChild(done);
   done.title = 'Tâche faite, assigne le statut À tester.';
+  done.style.position = 'fixed';
+  done.style.left = 0;
+  done.style.top = 0;
   done.addEventListener('click', function() {
     var uid = $('.author .user').href.replace(/^.+?(\d+)$/, '$1');
     $('.icon.icon-edit').click();
