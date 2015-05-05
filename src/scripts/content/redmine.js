@@ -19,5 +19,5 @@ togglbutton.render('body.controller-issues.action-show h2:not(.toggl)', {}, func
     projectName: projectElem && projectElem.textContent.split(" » ").pop()
   });
 
-  $('#content > h2').appendChild(link);
+  $('h2').appendChild(link);
 });
