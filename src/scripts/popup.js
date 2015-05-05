@@ -8,6 +8,7 @@ var PopUp = {
   $postStartText: " post-start popup",
   $popUpButton: null,
   $stopButton: null,
+  $error: null,
   showPage: function () {
     if (TogglButton.$user !== null) {
       document.querySelector(".menu").style.display = 'block';
@@ -27,6 +28,8 @@ var PopUp = {
         } else {
           window.location.reload();
         }
+      } else if (request.type === "login") {
+        PopUp.$error.style.display = 'block';
       }
     });
   }
@@ -34,6 +37,7 @@ var PopUp = {
 
 document.addEventListener('DOMContentLoaded', function () {
   PopUp.$stopButton = document.querySelector(".stop-button");
+  PopUp.$error = document.querySelector(".error");
   PopUp.showPage();
 
   PopUp.$stopButton.addEventListener('click', function () {
@@ -65,7 +69,9 @@ document.addEventListener('DOMContentLoaded', function () {
     window.close();
   });
 
-  document.querySelector(".login-btn").addEventListener('click', function () {
+  document.querySelector("#signin").addEventListener('submit', function (event) {
+    event.preventDefault();
+    PopUp.$error.style.display = 'none';
     var request = {
       type: "login",
       respond: true,
@@ -73,5 +79,9 @@ document.addEventListener('DOMContentLoaded', function () {
       password: document.querySelector("#login_password").value
     };
     PopUp.sendMessage(request);
+  });
+
+  document.querySelector(".header").addEventListener('click', function () {
+      chrome.tabs.create({url: "https://toggl.com/app"});
   });
 });

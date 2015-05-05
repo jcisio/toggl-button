@@ -107,6 +107,7 @@ p.form-row.first {
   width: 95px;
   margin: 10px auto;
   height: 30px;
+  cursor: pointer;
 }
 @media only screen and (-webkit-min-device-pixel-ratio: 2),
 only screen and (min-resolution: 192dpi),
@@ -153,4 +154,11 @@ hr {
   border: none;
   margin: 0 5px;
   border-top: 1px solid #ddd;
+}
+.error {
+  display: none;
+  background: red;
+  padding: 10px 5px;
+  color: white;
+}
 }

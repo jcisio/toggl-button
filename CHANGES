@@ -1,3 +1,60 @@
+[0.6.4]
+- Fixed edit popup position in Basecamp Next
+[0.6.3]
+- Fixed setting entry billable if project is billable
+[0.6.2]
+- Added support for Flow
+- Added support for Google Calendar
+- Added support for Sprint.ly
+- Added support for Basecamp Classis (basecamphq.com)
+- Improvements for Taiga.io implementation
+- Improvements for Axosoft implementation
+- Don't display reminders when user is not logged in
+- Improved edit popup position calculations
+- Other smaller improvements and fixes
+[0.6.1]
+- Fixed issues with non-www toggl.com login
+- Added support for Help Scout
+[0.6.0]
+- Added support for Countersoft Gemini
+- Added support for esa.io
+- Added support for drupal.org
+- Fixed Todoist description parsing for links
+[0.5.11]
+- Added atlassian.com to support all JIRA versions
+[0.5.10]
+- Added support for Axosoft
+- Updated edit form hide button to use &times;
+- Fixed Todoist description parsing
+[0.5.9]
+- Added support for Taiga.io
+- Added support for HabitRPG
+- Fixes for GitLab
+- Todoist description parse fix
+[0.5.8]
+- Fixed updating Toggl Button link
+- Fixed Toggl Button in Zendesk
+- Fixed Asana new task description issue
+[0.5.7]
+- Added support for Google mail
+[0.5.6]
+- Fixed minimal mode Toggl Button link refreshing
+[0.5.5]
+- Fixed too bold permissions
+- Removed OTRS because of too strong permissions
+[0.5.4]
+- Grouping projects by workspaces
+- Show client names in project dropdown
+- Show only active projects in dropdown
+- Added tasks dropdown for Pro users
+- Added support for OTRS
+[0.5.3]
+- Fixed Todoist description parsing issue
+[0.5.2]
+- Removed references to deprecated api
+- Clear selected tags when reopening edit form
+- Update "Start timer" link when running entry has changed
+- Reworked user sync so that tabs permission can be removed
 [0.5.1]
 - Added support for Teamwork
 - Style fixes
