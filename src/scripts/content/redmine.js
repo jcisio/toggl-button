@@ -2,7 +2,7 @@
 /*global $: false, document: false, togglbutton: false*/
 'use strict';
 
-togglbutton.render('body.controller-issues.action-show h2:not(.toggl)', {}, function (elem) {
+togglbutton.render('body.controller-issues.action-show #content > h2:not(.toggl)', {}, function (elem) {
   var link, description,
     numElem = $('#content > h2'),
     titleElem = $('.subject h3'),
