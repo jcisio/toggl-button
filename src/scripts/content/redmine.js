@@ -4,7 +4,7 @@
 
 togglbutton.render('body.controller-issues.action-show h2:not(.toggl)', {}, function (elem) {
   var link, description,
-    numElem = $('h2'),
+    numElem = $('#content > h2'),
     titleElem = $('.subject h3'),
     projectElem = $('h1');
 
@@ -19,10 +19,10 @@ togglbutton.render('body.controller-issues.action-show h2:not(.toggl)', {}, func
     projectName: projectElem && projectElem.textContent.split(" » ").pop()
   });
 
-  $('h2').appendChild(link);
+  numElem.appendChild(link);
 
   var done = createTag('button', '', 'Done');
-  $('h2').appendChild(done);
+  numElem.appendChild(done);
   done.title = 'Tâche faite, assigne le statut À tester.';
   done.style.position = 'fixed';
   done.style.left = 0;
