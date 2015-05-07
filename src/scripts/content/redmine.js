@@ -18,6 +18,12 @@ togglbutton.render('body.controller-issues.action-show #content > h2:not(.toggl)
     description: description,
     projectName: projectElem && projectElem.textContent.split(" » ").pop()
   });
+  link.style.position = 'fixed';
+  link.style.top = 0;
+  link.style.left = 0;
+  link.style.border = '1px #ccc solid';
+  link.style.fontSize = '13px';
+  link.style.setProperty('background-color', '#eee', 'important');
 
   numElem.appendChild(link);
 
@@ -25,8 +31,8 @@ togglbutton.render('body.controller-issues.action-show #content > h2:not(.toggl)
   numElem.appendChild(done);
   done.title = 'Tâche faite, assigne le statut À tester.';
   done.style.position = 'fixed';
-  done.style.left = 0;
-  done.style.top = 0;
+  done.style.left = '90px';
+  done.style.top = '4px';
   done.addEventListener('click', function() {
     var uid = $('.author .user').href.replace(/^.+?(\d+)$/, '$1');
     $('.icon.icon-edit').click();
