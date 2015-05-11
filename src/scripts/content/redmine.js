@@ -13,6 +13,9 @@ togglbutton.render('body.controller-issues.action-show #content > h2:not(.toggl)
     description = numElem.innerText + " " + description;
   }
 
+  // Allow of doubleclick to select the issue number.
+  numElem.textContent += ' ';
+
   link = togglbutton.createTimerLink({
     className: 'redmine',
     description: description,
