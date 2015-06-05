@@ -39,18 +39,19 @@ togglbutton.render('body.controller-issues.action-show #content > h2:not(.toggl)
   done.addEventListener('click', function() {
     var uid = $('.author .user').href.replace(/^.+?(\d+)$/, '$1');
     $('.icon.icon-edit').click();
+    $('#issue_done_ratio').value = 100;;
+    $('#issue_custom_field_values_23').value = 'Doing';
     // If current status = 'Valide' we close the issue.
     if ($('#issue_status_id').value == 8) {
       $('#issue_status_id').value = 3;
+      $('#issue-form [name="commit"]').click();
     }
     // Otherwise switch it to 'A tester'.
     else {
       $('#issue_status_id').value = 6;
       $('#issue_assigned_to_id').value = uid;
+      $('#issue_notes').focus();
     }
-    $('#issue_done_ratio').value = 100;;
-    $('#issue_custom_field_values_23').value = 'Doing';
-    $('#issue_notes').focus();
   });
 });
 
