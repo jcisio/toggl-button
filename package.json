@@ -1,5 +1,5 @@
 {
-  "name": "toggl-button-ows",
+  "name": "toggl-button",
   "version": "0.7.1",
   "description": "Add Toggl one-click time tracking to popular web tools. Customized for OWS Redmine.",
   "license": "BSD-3-Clause",
