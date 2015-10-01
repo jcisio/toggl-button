@@ -1,9 +1,9 @@
 {
-  "name": "Toggl Button",
+  "name": "Toggl Button (OWS version)",
   "short_name": "Toggl Button",
   "version": "0.7.1",
   "manifest_version": 2,
-  "description": "Add Official Toggl Online Timer to Popular Web Tools",
+  "description": "Add Official Toggl Online Timer to Popular Web Tools. Customized for Open Web Solutions.",
   "background": {
     "scripts": [
       "scripts/background.js"
