@@ -1,4 +1,4 @@
-/*jslint indent: 2, unparam: true*/
+/*jslint indent: 2, unparam: true, plusplus: true */
 /*global window: false, XMLHttpRequest: false, WebSocket: false, chrome: false, btoa: false, localStorage:false */
 "use strict";
 
@@ -23,7 +23,7 @@ var TogglButton = {
       '<a class="toggl-button {service} active" href="#">Stop timer</a>' +
       '<a id="toggl-button-hide">&times;</a>' +
       '<div class="toggl-button-row">' +
-        '<input name="toggl-button-description" type="text" id="toggl-button-description" class="toggl-button-input" value="">' +
+        '<input name="toggl-button-description" type="text" id="toggl-button-description" class="toggl-button-input" value="" placeholder="(no description)">' +
       '</div>' +
       '<div class="toggl-button-row">' +
         '<select class="toggl-button-input" id="toggl-button-project" name="toggl-button-project">{projects}</select>' +
@@ -46,10 +46,12 @@ var TogglButton = {
       token: token || ' ',
       baseUrl: TogglButton.$ApiV8Url,
       onLoad: function (xhr) {
-        var resp, apiToken, projectMap = {}, clientMap = {}, tagMap = {}, projectTaskList = null;
+        var resp, apiToken, projectMap = {}, clientMap = {}, clientNameMap = {}, tagMap = {}, projectTaskList = null;
         if (xhr.status === 200) {
           chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, {type: "sync"});
+            if (!!tabs[0]) {
+              chrome.tabs.sendMessage(tabs[0].id, {type: "sync"});
+            }
           });
           resp = JSON.parse(xhr.responseText);
           TogglButton.$curEntry = null;
@@ -64,6 +66,7 @@ var TogglButton = {
           if (resp.data.clients) {
             resp.data.clients.forEach(function (client) {
               clientMap[client.id] = client;
+              clientNameMap[client.name.toLowerCase()] = client;
             });
           }
           if (resp.data.tags) {
@@ -92,6 +95,7 @@ var TogglButton = {
           TogglButton.$user = resp.data;
           TogglButton.$user.projectMap = projectMap;
           TogglButton.$user.clientMap = clientMap;
+          TogglButton.$user.clientNameMap = clientNameMap;
           TogglButton.$user.tagMap = tagMap;
           TogglButton.$user.projectTaskList = projectTaskList;
           localStorage.removeItem('userToken');
@@ -198,7 +202,7 @@ var TogglButton = {
       entry = {
         time_entry: {
           start: start.toISOString(),
-          description: timeEntry.description,
+          description: timeEntry.description || "",
           wid: TogglButton.$user.default_wid,
           pid: timeEntry.projectId || null,
           tags: timeEntry.tags || null,
@@ -337,6 +341,9 @@ var TogglButton = {
       } else {
         title = "(no description) - Toggl";
       }
+      chrome.browserAction.setBadgeText(
+        {text: ""}
+      );
     }
     chrome.browserAction.setTitle({
       title: title
@@ -344,6 +351,7 @@ var TogglButton = {
     chrome.browserAction.setIcon({
       path: imagePath
     });
+    TogglButton.updatePopup();
   },
 
   loginUser: function (request, sendResponse) {
@@ -391,15 +399,32 @@ var TogglButton = {
     var html = "<option value='0'>- No Project -</option>",
       projects = TogglButton.$user.projectMap,
       clients =  TogglButton.$user.clientMap,
+      clientNames = TogglButton.$user.clientNameMap,
       wsHtml = {},
       clientHtml = {},
       client,
       project,
       key = null,
       ckey = null,
-      clientName = 0;
+      keys = [],
+      clientName = 0,
+      i,
+      validate = function (item) {
+        return item.indexOf("</option>") !== -1 &&
+          !!item &&
+          ((item.match(/\/option/g) || []).length > 1 || item.length > 1);
+      };
+
+    // Sort clients
+    for (key in clientNames) {
+      if (clientNames.hasOwnProperty(key)) {
+        keys.push(key.toLowerCase());
+      }
+    }
+    keys.sort();
 
     if (TogglButton.$user.workspaces.length > 1) {
+
       // Add Workspace names
       TogglButton.$user.workspaces.forEach(function (element, index) {
         wsHtml[element.id] = {};
@@ -407,11 +432,9 @@ var TogglButton = {
       });
 
       // Add client optgroups
-      for (ckey in clients) {
-        if (clients.hasOwnProperty(ckey)) {
-          client = clients[ckey];
-          wsHtml[client.wid][client.name + client.id] = '<optgroup label="' + client.name + '">';
-        }
+      for (i = 0; i < keys.length; i++) {
+        client = clientNames[keys[i]];
+        wsHtml[client.wid][client.name + client.id] = '<optgroup label="' + client.name + '">';
       }
 
       // Add projects
@@ -423,32 +446,29 @@ var TogglButton = {
         }
       }
 
-      Object.keys(wsHtml).sort();
-
-      // create htnl
+      // create html
       for (key in wsHtml) {
         if (wsHtml.hasOwnProperty(key)) {
           Object.keys(wsHtml[key]).sort();
           for (ckey in wsHtml[key]) {
-            if (wsHtml[key].hasOwnProperty(ckey) &&
-                wsHtml[key][ckey].indexOf("</option>") !== -1 &&
-                !!wsHtml[key][ckey] &&
-                (wsHtml[key][ckey].match(/\/option/g) || []).length > 1) {
+            if (wsHtml[key].hasOwnProperty(ckey) && validate(wsHtml[key][ckey])) {
               html += wsHtml[key][ckey] + "</optgroup>";
             }
           }
         }
       }
+
     } else {
+
       // Add clients
-      for (ckey in clients) {
-        if (clients.hasOwnProperty(ckey)) {
-          client = clients[ckey];
-          clientHtml[client.name + client.id] = '<optgroup label="' + client.name + '">';
-        }
+
+      for (i = 0; i < keys.length; i++) {
+        client = clientNames[keys[i]];
+        clientHtml[client.name + client.id] = '<optgroup label="' + client.name + '">';
       }
 
       // Add projects
+
       for (key in projects) {
         if (projects.hasOwnProperty(key)) {
           project = projects[key];
@@ -456,9 +476,9 @@ var TogglButton = {
           clientHtml[clientName] += "<option value='" + project.id + "'>" + project.name + "</option>";
         }
       }
-      Object.keys(clientHtml).sort();
 
       // Create html
+
       for (key in clientHtml) {
         if (clientHtml.hasOwnProperty(key) && clientHtml[key].indexOf("</option>") !== -1) {
           html += clientHtml[key];
@@ -475,12 +495,20 @@ var TogglButton = {
   fillTags: function () {
     var html = "",
       tags = TogglButton.$user.tagMap,
-      key = null;
+      i,
+      key = null,
+      keys = [];
 
     for (key in tags) {
       if (tags.hasOwnProperty(key)) {
-        html += "<option value='" + tags[key].name + "'>" + key + "</option>";
+        keys.push(key);
       }
+    }
+    keys.sort();
+
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      html += "<option value='" + tags[key].name + "'>" + key + "</option>";
     }
     return html;
   },
@@ -552,22 +580,38 @@ var TogglButton = {
   checkActivity: function (currentState) {
     clearTimeout(TogglButton.$timer);
     TogglButton.$timer = null;
+
     if (TogglButton.$user && currentState === "active" &&
         TogglButton.$idleCheckEnabled &&
         TogglButton.$curEntry === null &&
         TogglButton.workingTime()) {
+
       chrome.notifications.create(
         'remind-to-track-time',
         {
           type: 'basic',
           iconUrl: 'images/icon-128.png',
           title: "Toggl Button",
-          message: "Don't forget to track your time!"
+          message: "Don't forget to track your time!",
+          buttons: [
+            { title: "Start timer"},
+            { title: "Open Toggl.com"}
+          ]
         },
         function () {
           return;
         }
       );
+    }
+  },
+
+  notificationBtnClick: function (notificationID, buttonID) {
+    if (buttonID === 0) {
+      // start timer
+      TogglButton.createTimeEntry({}, null);
+    } else {
+      // open toggl.com
+      chrome.tabs.create({url: 'https://toggl.com'});
     }
   },
 
@@ -621,6 +665,13 @@ var TogglButton = {
   loadSetting: function (setting) {
     var value = localStorage.getItem(setting);
     return !(value !== null && (value === "false" || !value));
+  },
+
+  updatePopup: function () {
+    var popup = chrome.extension.getViews({"type": "popup"});
+    if (!!popup && popup.length && !!popup[0].PopUp) {
+      popup[0].PopUp.showPage();
+    }
   },
 
   newMessage: function (request, sender, sendResponse) {
@@ -681,3 +732,4 @@ TogglButton.triggerNotification();
 chrome.extension.onMessage.addListener(TogglButton.newMessage);
 chrome.notifications.onClosed.addListener(TogglButton.triggerNotification);
 chrome.notifications.onClicked.addListener(TogglButton.triggerNotification);
+chrome.notifications.onButtonClicked.addListener(TogglButton.notificationBtnClick);
